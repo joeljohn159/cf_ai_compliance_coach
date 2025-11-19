@@ -1,0 +1,26 @@
+{
+    "name": "cf-ai-compliance-coach",
+    "version": "1.0.0",
+    "description": "An AI-powered compliance checker built with Cloudflare Workers AI and Durable Objects.",
+    "main": "src/index.ts",
+    "scripts": {
+        "start": "wrangler dev --remote",
+        "dev": "wrangler dev --remote",
+        "deploy": "wrangler deploy",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+        "cloudflare",
+        "workers",
+        "ai",
+        "durable-objects"
+    ],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@cloudflare/workers-types": "^4.20240725.0",
+        "@types/node": "^20.14.9",
+        "typescript": "^5.5.3",
+        "wrangler": "^4.49.0"
+    }
+}

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CF_AI_Compliance_Coach</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f7f9;
+        }
+
+        #chat-container {
+            border: 1px solid #ccc;
+            height: 400px;
+            overflow-y: scroll;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+
+        .user {
+            text-align: right;
+            background-color: #d1e7dd;
+        }
+
+        .assistant {
+            text-align: left;
+            background-color: #f8d7da;
+        }
+
+        textarea,
+        button,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #004d9c;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:disabled {
+            background-color: #a0a0a0;
+        }
+
+        h1 {
+            color: #004d9c;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Cloudflare AI Compliance Coach 🛡️</h1>
+    <p>Submit text and a rulebook to check for violations using Llama 3 on Workers AI.</p>
+    <div id="chat-container">
+    </div>
+    <select id="rulebook-select">
+        <option value="Basic Security Policy" selected>Basic Security Policy</option>
+        <option value="Marketing Brand Guidelines">Marketing Brand Guidelines</option>
+    </select>
+    <textarea id="user-input" rows="4"
+        placeholder="Paste text here (e.g., 'I think we should use the password '12345' for the next server release.')"></textarea>
+    <button onclick="sendMessage()">Check Compliance</button>
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const rulebookSelect = document.getElementById('rulebook-select');
+        const sendButton = document.querySelector('button');
+        const WORKER_URL = '/chat';
+
+        function displayMessage(role, content) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${role}`;
+            msgDiv.innerHTML = `<strong>${role === 'user' ? 'You' : 'Coach'}</strong>: <br>${content.replace(/\n/g, '<br>')}`;
+            chatContainer.appendChild(msgDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            const rulebook = rulebookSelect.value;
+            if (!message) return;
+
+            displayMessage('user', message);
+            userInput.value = '';
+            sendButton.disabled = true;
+
+            try {
+                const response = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message, rulebook }),
+                });
+
+                const data = await response.json();
+                if (response.ok && data.response) {
+                    displayMessage('assistant', data.response);
+                } else {
+                    displayMessage('assistant', `[ERROR] Failed to get response: ${data.error || 'Server error'}`);
+                }
+            } catch (error) {
+                console.error(error);
+                displayMessage('assistant', `[FATAL ERROR] Check console for details.`);
+            } finally {
+                sendButton.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

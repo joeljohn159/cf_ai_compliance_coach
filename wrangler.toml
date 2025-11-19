@@ -1,0 +1,28 @@
+name = "cf-ai-compliance-coach"
+main = "src/index.ts"
+compatibility_date = "2025-11-18"
+
+account_id = "ENTER YOUR ACCOUNT ID HERE"
+
+[ai]
+binding = "AI"
+remote = true
+
+# Durable Object Binding
+[[durable_objects.bindings]]
+name = "DURABLE_CHAT"
+class_name = "DurableChat"
+
+# Migration required to deploy the Durable Object class
+[[migrations]]
+tag = "v1"
+new_classes = ["DurableChat"]
+
+# Text module for HTML
+[build]
+[build.upload]
+format = "modules"
+
+[[rules]]
+type = "Text"
+globs = ["**/*.html"]
